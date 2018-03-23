@@ -1,0 +1,116 @@
+python generateTask.py na=4 nb=7 ta=0 tb=0 p01.pddl
+python generateTask.py na=4 nb=7 ta=2 tb=0 p02.pddl
+python generateTask.py na=4 nb=7 ta=4 tb=0 p03.pddl
+python generateTask.py na=4 nb=7 ta=6 tb=0 p04.pddl
+python generateTask.py na=4 nb=7 ta=8 tb=0 p05.pddl
+
+python generateTask.py na=4 nb=8 ta=0 tb=0 p06.pddl
+python generateTask.py na=4 nb=8 ta=2 tb=0 p07.pddl
+python generateTask.py na=4 nb=8 ta=4 tb=0 p08.pddl
+python generateTask.py na=4 nb=8 ta=6 tb=0 p09.pddl
+python generateTask.py na=4 nb=8 ta=8 tb=0 p10.pddl
+
+python generateTask.py na=6 nb=9 ta=0 tb=0 p11.pddl
+python generateTask.py na=6 nb=9 ta=2 tb=0 p12.pddl
+python generateTask.py na=6 nb=9 ta=4 tb=0 p13.pddl
+python generateTask.py na=6 nb=9 ta=6 tb=0 p14.pddl
+python generateTask.py na=6 nb=9 ta=9 tb=0 p15.pddl
+
+python generateTask.py na=6 nb=10 ta=0 tb=0 p16.pddl
+python generateTask.py na=6 nb=10 ta=2 tb=0 p17.pddl
+python generateTask.py na=6 nb=10 ta=4 tb=0 p18.pddl
+python generateTask.py na=6 nb=10 ta=6 tb=0 p19.pddl
+python generateTask.py na=6 nb=10 ta=9 tb=0 p20.pddl
+
+python generateTask.py na=8 nb=11 ta=0 tb=0 p21.pddl
+python generateTask.py na=8 nb=11 ta=2 tb=0 p22.pddl
+python generateTask.py na=8 nb=11 ta=4 tb=0 p23.pddl
+python generateTask.py na=8 nb=11 ta=6 tb=0 p24.pddl
+python generateTask.py na=8 nb=11 ta=9 tb=0 p25.pddl
+python generateTask.py na=8 nb=11 ta=11 tb=0 p26.pddl
+
+python generateTask.py na=10 nb=14 ta=0 tb=0 p27.pddl
+python generateTask.py na=10 nb=14 ta=2 tb=0 p28.pddl
+python generateTask.py na=10 nb=14 ta=4 tb=0 p29.pddl
+python generateTask.py na=10 nb=14 ta=6 tb=0 p30.pddl
+python generateTask.py na=10 nb=14 ta=9 tb=0 p31.pddl
+python generateTask.py na=10 nb=14 ta=11 tb=0 p32.pddl
+
+
+
+python generateTask.py na=4 nb=7 ta=0 tb=2 p31.pddl
+python generateTask.py na=4 nb=7 ta=2 tb=2 p31.pddl
+python generateTask.py na=4 nb=7 ta=4 tb=2 p31.pddl
+python generateTask.py na=4 nb=7 ta=6 tb=2 p31.pddl
+python generateTask.py na=4 nb=7 ta=8 tb=2 p31.pddl
+
+python generateTask.py na=4 nb=8 ta=0 tb=2 p31.pddl
+python generateTask.py na=4 nb=8 ta=2 tb=2 p31.pddl
+python generateTask.py na=4 nb=8 ta=4 tb=2 p41.pddl
+python generateTask.py na=4 nb=8 ta=6 tb=2 p41.pddl
+python generateTask.py na=4 nb=8 ta=8 tb=2 p41.pddl
+
+python generateTask.py na=6 nb=9 ta=0 tb=2 p41.pddl
+python generateTask.py na=6 nb=9 ta=2 tb=2 p41.pddl
+python generateTask.py na=6 nb=9 ta=4 tb=2 p41.pddl
+python generateTask.py na=6 nb=9 ta=6 tb=2 p41.pddl
+python generateTask.py na=6 nb=9 ta=9 tb=2 p41.pddl
+
+python generateTask.py na=6 nb=10 ta=0 tb=2 p41.pddl
+python generateTask.py na=6 nb=10 ta=2 tb=2 p41.pddl
+python generateTask.py na=6 nb=10 ta=4 tb=2 p51.pddl
+python generateTask.py na=6 nb=10 ta=6 tb=2 p51.pddl
+python generateTask.py na=6 nb=10 ta=9 tb=2 p51.pddl
+
+python generateTask.py na=8 nb=11 ta=0 tb=2 p51.pddl
+python generateTask.py na=8 nb=11 ta=2 tb=2 p51.pddl
+python generateTask.py na=8 nb=11 ta=4 tb=2 p51.pddl
+python generateTask.py na=8 nb=11 ta=6 tb=2 p51.pddl
+python generateTask.py na=8 nb=11 ta=9 tb=2 p51.pddl
+python generateTask.py na=8 nb=11 ta=11 tb=2 p51.pddl
+
+python generateTask.py na=10 nb=14 ta=0 tb=2 p51.pddl
+python generateTask.py na=10 nb=14 ta=2 tb=2 p61.pddl
+python generateTask.py na=10 nb=14 ta=4 tb=2 p61.pddl
+python generateTask.py na=10 nb=14 ta=6 tb=2 p61.pddl
+python generateTask.py na=10 nb=14 ta=9 tb=2 p61.pddl
+python generateTask.py na=10 nb=14 ta=11 tb=2 p61.pddl
+
+
+python generateTask.py na=4 nb=7 ta=0 tb=4 p61.pddl
+python generateTask.py na=4 nb=7 ta=2 tb=4 p61.pddl
+python generateTask.py na=4 nb=7 ta=4 tb=4 p61.pddl
+python generateTask.py na=4 nb=7 ta=6 tb=4 p61.pddl
+python generateTask.py na=4 nb=7 ta=8 tb=4 p61.pddl
+
+python generateTask.py na=4 nb=8 ta=0 tb=4 p71.pddl
+python generateTask.py na=4 nb=8 ta=2 tb=4 p71.pddl
+python generateTask.py na=4 nb=8 ta=4 tb=4 p71.pddl
+python generateTask.py na=4 nb=8 ta=6 tb=4 p71.pddl
+python generateTask.py na=4 nb=8 ta=8 tb=4 p71.pddl
+
+python generateTask.py na=6 nb=9 ta=0 tb=4 p71.pddl
+python generateTask.py na=6 nb=9 ta=2 tb=4 p71.pddl
+python generateTask.py na=6 nb=9 ta=4 tb=4 p71.pddl
+python generateTask.py na=6 nb=9 ta=6 tb=4 p71.pddl
+python generateTask.py na=6 nb=9 ta=9 tb=4 p71.pddl
+
+python generateTask.py na=6 nb=10 ta=0 tb=4 p81.pddl
+python generateTask.py na=6 nb=10 ta=2 tb=4 p81.pddl
+python generateTask.py na=6 nb=10 ta=4 tb=4 p81.pddl
+python generateTask.py na=6 nb=10 ta=6 tb=4 p81.pddl
+python generateTask.py na=6 nb=10 ta=9 tb=4 p81.pddl
+
+python generateTask.py na=8 nb=11 ta=0 tb=4 p81.pddl
+python generateTask.py na=8 nb=11 ta=2 tb=4 p81.pddl
+python generateTask.py na=8 nb=11 ta=4 tb=4 p81.pddl
+python generateTask.py na=8 nb=11 ta=6 tb=4 p81.pddl
+python generateTask.py na=8 nb=11 ta=9 tb=4 p81.pddl
+python generateTask.py na=8 nb=11 ta=11 tb=4 p91.pddl
+
+python generateTask.py na=10 nb=14 ta=0 tb=4 p91.pddl
+python generateTask.py na=10 nb=14 ta=2 tb=4 p91.pddl
+python generateTask.py na=10 nb=14 ta=4 tb=4 p91.pddl
+python generateTask.py na=10 nb=14 ta=6 tb=4 p91.pddl
+python generateTask.py na=10 nb=14 ta=9 tb=4 p91.pddl
+python generateTask.py na=10 nb=14 ta=11 tb=4 p91.pddl
