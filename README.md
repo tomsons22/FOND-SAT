@@ -1,6 +1,9 @@
 # FOND-SAT
 FOND solver based on SAT
 
+## Authors
+Tomas Geffner and Hector Geffner
+
 ## Files
 - *F-domains/* contains the FOND domains used
 - *src/* contains the code for the solver, and a pre-compiled version of Minisat
