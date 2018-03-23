@@ -30,5 +30,5 @@ The policy displayed has 4 sections:
 For easiness to use, this includes a pre-compiled version of Minisat. This pre-compiled version does not allow the use of time/memory limits. If you want to try another SAT solver (or use time/memory contraints), the following parts of the code should be modified:
 - *src/main.py:* comment line 117.
 - *src/main.py:* uncomment line 118 and adapt it to the corresponding SAT solver.
-- *src/CNF.py:* line 200 corresponds to the function *parseOutput(...)* which reads the file output by the SAT solver. This function should be modifiy to parse the output of your SAT solver (works for versions of Minisat).
+- *src/CNF.py:* line 200 corresponds to the function *parseOutput(...)* which reads the file output by the SAT solver. This function should be modified to parse the output of your SAT solver (works for versions of Minisat).
 - **RECOMMENDATION:** install a version of Minisat from *http://minisat.se/*, comment line 117 of *main.py* and uncomment line 118. Using another version of Minisat will allow the use of time/memory constraints, and does not require the modification of *parseOutput(...)*. The results shown in the paper were obtained using a newer version of Minisat, not the pre-compiled version.
