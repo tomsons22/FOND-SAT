@@ -35,3 +35,6 @@ For easiness to use, this includes a pre-compiled version of Minisat. This pre-c
 - *src/main.py:* uncomment line 118 and adapt it to the corresponding SAT solver.
 - *src/CNF.py:* line 200 corresponds to the function *parseOutput(...)* which reads the file output by the SAT solver. This function should be modified to parse the output of your SAT solver (works for versions of Minisat).
 - **RECOMMENDATION:** install a version of Minisat from *http://minisat.se/*, comment line 117 of *main.py* and uncomment line 118. Using another version of Minisat will allow the use of time/memory constraints, and does not require the modification of *parseOutput(...)*. The results shown in the paper were obtained using a newer version of Minisat, not the pre-compiled version.
+
+## Dual FOND planning
+The paper talks about what we call *Dual FOND planning*. Dual FOND problems are those in which some actions are *fair* and some are *unfair*. To set some action (or actions) as unfair, add \_unfair\_ as the last part of the action name in the *pddl* file. The planner will then set this action as unfair.
