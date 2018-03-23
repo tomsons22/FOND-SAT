@@ -114,7 +114,8 @@ for i in range(1000):
 	if time_for_sat < time_buffer:
 		clean_and_exit(name_formula_file, name_output_satsolver, name_sas_file, name_formula_file_extra, name_final, '-> OUT OF TIME')
 
-	command = '/home/tomas/Install/minisat/minisat -mem-lim=%i -cpu-lim=%i %s %s' % (mem_limit, time_for_sat, name_formula_file, name_output_satsolver)
+	command = './minisat %s %s' % (name_formula_file, name_output_satsolver)
+	# command = '/path/to/SATsolver/minisat -mem-lim=%i -cpu-lim=%i %s %s' % (mem_limit, time_for_sat, name_formula_file, name_output_satsolver)
 	print('SAT solver called with %i MB and %i seconds' % (mem_limit, time_for_sat))
 	os.system(command)
 	end_solv = timer()
