@@ -8,4 +8,5 @@ FOND solver based on SAT
 ## Example usage (basic)
 From the *src/* directory run the following command:
 > python main.py ../F-domains/islands/domain.pddl ../F-domains/islands/p03.pddl
+
 This would run the solver for the task 03 of the islands domain.
