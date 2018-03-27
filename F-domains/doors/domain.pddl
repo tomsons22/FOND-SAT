@@ -1,5 +1,3 @@
-; Domain proposed by Tomas Geffner and Hector Geffner
-
 (define (domain doors)
   (:requirements :typing :strips :non-deterministic :negative-preconditions)
   (:types location door)
