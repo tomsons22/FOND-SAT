@@ -1,5 +1,5 @@
 # FOND-SAT
-FOND solver based on SAT
+FOND solver based on SAT (https://arxiv.org/pdf/1806.09455.pdf)
 
 ## Authors
 Tomas Geffner and Hector Geffner
