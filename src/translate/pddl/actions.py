@@ -2,13 +2,9 @@ from __future__ import print_function
 
 import copy
 
-# from . import conditions
-# from . import effects
-# from . import pddl_types
-
-import conditions
-import effects
-import pddl_types
+from . import conditions
+from . import effects
+from . import pddl_types
 
 class Action(object):
     def __init__(self, name, parameters, num_external_parameters,

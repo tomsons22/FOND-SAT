@@ -2,21 +2,13 @@ from __future__ import print_function
 
 import sys
 
-# from . import actions
-# from . import axioms
-# from . import conditions
-# from . import predicates
-# from . import pddl_types
-# from . import functions
-# from . import f_expression
-
-import actions
-import axioms
-import conditions
-import predicates
-import pddl_types
-import functions
-import f_expression
+from . import actions
+from . import axioms
+from . import conditions
+from . import predicates
+from . import pddl_types
+from . import functions
+from . import f_expression
 
 class Task(object):
     def __init__(self, domain_name, task_name, requirements,

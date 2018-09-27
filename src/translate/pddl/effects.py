@@ -1,12 +1,8 @@
 from __future__ import print_function
 
-# from . import conditions
-# from . import pddl_types
-# from . import f_expression
-
-import conditions
-import pddl_types
-import f_expression
+from . import conditions
+from . import pddl_types
+from . import f_expression
 
 def cartesian_product(*sequences):
     # TODO: Also exists in tools.py outside the pddl package (defined slightly

@@ -38,3 +38,6 @@ For easiness to use, this includes a pre-compiled version of Minisat. This pre-c
 
 ## Dual FOND planning
 The paper talks about what we call *Dual FOND planning*. Dual FOND problems are those in which some actions are *fair* and some are *unfair*. To set some action (or actions) as unfair, add \_unfair\_ as the last part of the action name in the *pddl* file. The planner will then set this action as unfair.
+
+## Note
+The solver uses the parser from PRP (https://bitbucket.org/haz/planner-for-relevant-policies/wiki/Home)

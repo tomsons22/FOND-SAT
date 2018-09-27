@@ -11,11 +11,9 @@ import sys
 import os.path
 import re
 
-# from . import parser
-# from . import tasks
+from . import parser
 
-import parser
-import tasks
+from . import tasks
 
 def parse_pddl_file(type, filename):
     try:

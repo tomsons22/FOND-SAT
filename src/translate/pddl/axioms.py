@@ -1,10 +1,7 @@
 from __future__ import print_function
 
-# from . import conditions
-# from . import predicates
-
-import conditions
-import predicates
+from . import conditions
+from . import predicates
 
 class Axiom(object):
     def __init__(self, name, parameters, num_external_parameters, condition):

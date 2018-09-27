@@ -177,10 +177,16 @@ def translate_strips_operator(operator, dictionary, ranges, mutex_dict,
     if conditions is None:
         return []
     sas_operators = []
-    for condition in conditions:
+
+    if len(conditions) > 1:
+        suffixes = [("_v%d" % (i+1)) for i in range(len(conditions))]
+    else:
+        suffixes = ['']
+
+    for (condition, suffix) in zip(conditions, suffixes):
         op = translate_strips_operator_aux(operator, dictionary, ranges,
                                            mutex_dict, mutex_ranges,
-                                           implied_facts, condition)
+                                           implied_facts, condition, suffix)
         if op is not None:
             sas_operators.append(op)
     return sas_operators
@@ -205,7 +211,7 @@ def negate_and_translate_condition(condition, dictionary, ranges, mutex_dict,
 
 
 def translate_strips_operator_aux(operator, dictionary, ranges, mutex_dict,
-                                  mutex_ranges, implied_facts, condition):
+                                  mutex_ranges, implied_facts, condition, suffix = ''):
 
     # collect all add effects
     effects_by_variable = defaultdict(lambda: defaultdict(list))
@@ -269,8 +275,8 @@ def translate_strips_operator_aux(operator, dictionary, ranges, mutex_dict,
                         new_cond[cvar] = cval
                     else:
                         effects_by_variable[var][none_of_those].append(new_cond)
-
-    return build_sas_operator(operator.name, condition, effects_by_variable,
+    new_name = operator.name.split(' ')[0] + suffix + ' ' + ' '.join(operator.name.split(' ')[1:])
+    return build_sas_operator(new_name, condition, effects_by_variable,
                               operator.cost, ranges, implied_facts)
 
 
@@ -517,8 +523,6 @@ def pddl_to_sas(task):
         ranges, strips_to_sas = strips_to_sas_dictionary(
             groups, assert_partial=USE_PARTIAL_ENCODING)
 
-    print(strips_to_sas) #####################
-
     with timers.timing("Building dictionary for full mutex groups"):
         mutex_ranges, mutex_dict = strips_to_sas_dictionary(
             mutex_groups, assert_partial=False)
@@ -652,6 +656,7 @@ def parse_args():
 
 
 def main():
+    print('HOLAAAAAAAAAAAAAAAAAAAAAAA')
     args = parse_args()
 
     timer = timers.Timer()
@@ -660,7 +665,7 @@ def main():
 
     with timers.timing("Normalizing task"):
         normalize.normalize(task)
-    
+
     task.INVARIANT_TIME_LIMIT = int(args.inv_limit)
 
     if args.generate_relaxed_task:
@@ -671,12 +676,17 @@ def main():
                     del action.effects[index]
 
     sas_task = pddl_to_sas(task)
-    ########### dump_statistics(sas_task).
+
+    assert len(sas_task.operators) == len(set([o.name for o in sas_task.operators])), \
+           "Error: Operator names (with parameters) must be unique"
+
+    dump_statistics(sas_task)
 
     with timers.timing("Writing output"):
         with open(args.sas_name, "w") as output_file:
             sas_task.output(output_file)
-    ########### print("Done! %s" % timer)
+    print("Done! %s" % timer)
+
 
 if __name__ == "__main__":
     main()
