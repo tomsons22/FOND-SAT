@@ -24,28 +24,53 @@ def generateControllerStates(i):
 
 # PARSE ARGUMENTS
 args_parser = argparse.ArgumentParser(description = 'Process arguments to SAT FOND planner')
-args_parser.add_argument('path_domain', help = 'Path to domain file (pddl) -- NOT OPTIONAL')
-args_parser.add_argument('path_instance', help = 'Path to instance file (pddl) -- NOT OPTIONAL')
-args_parser.add_argument('-time_limit', type = int, default = 3600, help = 'Time limit (int) for solver in seconds (default 3600 s)')
-args_parser.add_argument('-mem_limit',  type = int, default = 4096, help = 'Memory limit (int) for solver in MB (default 4096 MB)')
-args_parser.add_argument('-name_temp', default = 'temp', help = 'Name for temp files (erased after solver is done)')
-args_parser.add_argument('-strong', type = int, default = 0, help = '1: strong planning mode; 0: default, strong cyclic planning mode')
-args_parser.add_argument('-inc', type = int, default = 1, help = 'Increments in controller size per step (> 0, default 1)')
-args_parser.add_argument('-gen_info', type = int, default = 0, help = '1: shows info about SAT formula generation; 0: default, does not show info')
-args_parser.add_argument('-policy', type = int, default = 0, help = '1: shows final policy (if found); 0: default, does not show policy')
+args_parser.add_argument(
+	'path_domain',
+	help = 'Path to domain file (pddl)')
+args_parser.add_argument(
+	'path_instance',
+	help = 'Path to problem instance file (pddl)')
+args_parser.add_argument(
+	'--time_limit',
+	type = int,
+	default = 3600,
+	help = 'Time limit (int) for solver in seconds (default: %(default)s).')
+args_parser.add_argument(
+	'--mem_limit',
+	type = int,
+	default = 4096,
+	help = 'Memory limit (int) for solver in MB (default: %(default)s)')
+args_parser.add_argument(
+	'--name_temp',
+	default = 'temp',
+	help = 'Name for temp files; erased after solver is done (default: %(default)s)')
+args_parser.add_argument(
+	'--strong',
+	action='store_true',
+	dest='STRONG',
+	default=False,
+	help = 'Search for strong  solutions (instead of default strong cyclic solutions) - (default: %(default)s)')
+args_parser.add_argument(
+	'--inc',
+	type = int,
+	default = 1,
+	help = 'Increments in controller size per step (default: %(default)s)')
+args_parser.add_argument(
+	'--gen-info',
+	action='store_true',
+	dest='GEN_INFO',
+	default=False,
+	help = 'Show info about SAT formula generation %(default)s)')
+args_parser.add_argument(
+	'--show-policy',
+	action='store_true',
+	dest='SHOW_POLICY',
+	default = False,
+	help = 'Show final policy, if found %(default)s)')
 
-params = vars(args_parser.parse_args())
-if params['strong'] not in [0, 1]:
-	print('Argument strong has to be 0 or 1')
-	exit()
-if params['policy'] not in [0, 1]:
-	print('Argument policy has to be 0 or 1')
-	exit()
-if params['inc'] <= 0:
-	print('Argument inc has to be > 0')
-	exit()
-#################
+params = vars(args_parser.parse_args())	# vars returns a dictionary of the arguments
 
+print(params)	# just print the options that will be used
 
 time_start = timer()
 time_limit = params['time_limit']
@@ -65,17 +90,9 @@ p.generate_task(name_sas_file)
 my_task = p.translate_to_atomic()
 fair = my_task.is_fair()
 
-print_policy = True
-if params['policy'] == 0:
-	print_policy = False
-
-strong = True
-if params['strong'] == 0:
-	strong = False
-
-show_gen_info = True
-if params['gen_info'] == 0:
-	show_gen_info = False
+print_policy  = params['SHOW_POLICY']
+strong = params['STRONG']
+show_gen_info = params['GEN_INFO']
 
 cnf = CNF(name_formula_file, name_formula_file_extra, fair, strong)
 
