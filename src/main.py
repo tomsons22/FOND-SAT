@@ -96,7 +96,7 @@ no_clean = params['no_clean']
 p = Parser()    # build utlity object Parser
 p.set_domain(params['path_domain'])
 p.set_problem(params['path_instance'])
-name_SAS_file = os.path.join(TMP_DIR, 'outputtrans-{}.txt'.format(params['name_temp']))                # aux file
+name_SAS_file = os.path.join(TMP_DIR, 'output-sas-{}.txt'.format(params['name_temp']))                # aux file
 p.generate_file(name_SAS_file)
 p.generate_task(name_SAS_file)
 
