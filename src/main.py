@@ -130,8 +130,8 @@ for i in range(1000):   # try up to controller of size 1000
     cnf.reset()
     start_g = timer()
 
-    ## NOW generate CNF for the particular size of the controller
-    # n0 and ng are the atoms for initial and goal controller states
+    ## GENERATE CNF for the particular size of the controller
+    # Use n0 and ng are the atoms for initial and goal controller states
     cnf.generate_clauses(my_task, 'n0', 'ng', controllerStates, len(controllerStates), p, show_gen_info)
 
     print('SAT formula generation time = {:f}'.format(timer() - start_g))
@@ -145,7 +145,7 @@ for i in range(1000):   # try up to controller of size 1000
     print('Creating formula...')
     name_final = cnf.generateInputSat(name_formula_file)
 
-    print('Done creating formula. Calling solver...')
+    print('\t Done creating formula. Calling solver...')
     start_solv = timer()
 
     time_for_sat = int(time_limit - (timer() - time_start))
