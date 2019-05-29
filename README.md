@@ -39,11 +39,17 @@ The policy displayed has 4 sections:
 
 ## SAT solver
 
-For easiness to use, this includes a pre-compiled version of Minisat. This pre-compiled version does not allow the use of time/memory limits. If you want to try another SAT solver (or use time/memory contraints), the following parts of the code should be modified:
+For easiness to use, this includes a pre-compiled version of Minisat. This pre-compiled version does not allow the use of time/memory limits. If you want to try another SAT solver (or use time/memory contraints), you should re-define the assignment to variable `command` in file `src/main.py` and provide the adequate `parseOutput()` function to parse the output of the solver used.
 
-- `src/main.py:` comment line 117.
-- `src/main.py:` uncomment line 118 and adapt it to the corresponding SAT solver.
-- `src/CNF.py:` line 200 corresponds to the function *parseOutput(...)* which reads the file output by the SAT solver. This function should be modified to parse the output of your SAT solver (works for versions of Minisat).
+By default, the assginment to the variable is as follows (in `src/main.py`):
+
+    command = './minisat {} {}'.format(name_formula_file, name_output_satsolver)
+
+You need to adapt it to the corresponding SAT solver, for example to use Minisat with time/memory constraints (commented out in the code):
+
+    command = '/path/to/SATsolver/minisat -mem-lim={} -cpu-lim={} {} {}'.format(mem_limit, time_for_sat, name_formula_file, name_output_satsolver)
+
+Then, you need to adapt function `parseOutput(...)` in `src/CNF.py`, to parse the output of your SAT solver  (currently works for versions of Minisat).
 
 **RECOMMENDATION:** install a version of Minisat from *http://minisat.se/*, comment line 117 of *main.py* and uncomment line 118. Using another version of Minisat will allow the use of time/memory constraints (newer version is also faster), and does not require the modification of *parseOutput(...)*. The results shown in the paper were obtained using a newer version of Minisat, not the pre-compiled one.
 
