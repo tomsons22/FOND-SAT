@@ -220,8 +220,9 @@ class CNF:
                 varName = self.mapNumberVariable[var]
                 t = self.mapVariableType[varName]
                 sets[t - 1].add(varName)
-        print('===================\n===================')
-        print('Controller -- CS = Controller State')
+        print('============================================================================')
+        print('Controller -- CS = Controller State - START')
+        print('============================================================================')
         for i in range(len(sets)):
             if i + 1 in self.print_types:
                 s = sets[i]
@@ -262,6 +263,9 @@ class CNF:
                         print(j)
         print('===================')
         print('Solved with %i states' % len(controllerStates))
+        print('============================================================================')
+        print('Controller -- CS = Controller State - END')
+        print('============================================================================')
         return True
 
     def getNumberVariables(self):
