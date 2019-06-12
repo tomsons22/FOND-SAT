@@ -9,8 +9,8 @@ from timeit import default_timer as timer
 import time
 import argparse
 
-TMP_DIR = 'tmp'
-# TMP_LOGS_DIR = os.path.join(TMP_DIR, 'logs-run')
+TMP_DIR = 'tmp' # subdir where to store all aux files generated (e.g., SAS files)
+
 
 
 def clean(n1, n2, n3, n4, n5, msg):
@@ -92,8 +92,9 @@ show_gen_info = params['gen_info']
 no_clean = params['no_clean']
 
 
-# Let's now parse the PDDL domain and problem and generate SAS files (http://www.fast-downward.org/TranslatorOutputFormat)
-p = Parser()    # build utlity object Parser
+# Parse the PDDL domain and problem and generate SAS files (http://www.fast-downward.org/TranslatorOutputFormat)
+# (all aux files created in temporary directory)
+p = Parser()    # build utility object Parser
 p.set_domain(params['path_domain'])
 p.set_problem(params['path_instance'])
 name_SAS_file = os.path.join(TMP_DIR, 'output-sas-{}.txt'.format(params['name_temp']))                # aux file
@@ -105,7 +106,7 @@ p.generate_task(name_SAS_file)
 my_task = p.translate_to_atomic()
 fair = my_task.is_fair()
 
-# Before we start iterationg, create a CNF object
+# Before we start iterating (on no of controller states), create a CNF object
 name_formula_file = os.path.join(TMP_DIR, 'formula-{}.txt'.format(params['name_temp']))                # aux file
 name_formula_file_extra = os.path.join(TMP_DIR, 'formula-extra-{}.txt'.format(params['name_temp']))    # aux file
 name_output_satsolver = os.path.join(TMP_DIR, 'outsat-{}.txt'.format(params['name_temp']))             # aux file
@@ -117,7 +118,7 @@ for i in range(1000):   # try up to controller of size 1000
         clean(name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final,
                        '-> OUT OF TIME')
 
-    # generate set of controller states (depending on iteration and scaling rate)
+    # GENERATE set of CONTROLLER STATES (depending on iteration and scaling rate)
     controllerStates = generateControllerStates(i * params['inc'])
 
     print('#######################################################################################')
@@ -130,8 +131,8 @@ for i in range(1000):   # try up to controller of size 1000
     cnf.reset()
     start_g = timer()
 
-    ## GENERATE CNF for the particular size of the controller
-    # Use n0 and ng are the atoms for initial and goal controller states
+    ## 1 - GENERATE CNF for the particular size of the controller
+    #       Use n0 and ng are the atoms for initial and goal controller states
     cnf.generate_clauses(my_task, 'n0', 'ng', controllerStates, len(controllerStates), p, show_gen_info)
 
     print('SAT formula generation time = {:f}'.format(timer() - start_g))
@@ -146,29 +147,30 @@ for i in range(1000):   # try up to controller of size 1000
     name_final = cnf.generateInputSat(name_formula_file)
 
     print('\t Done creating formula. Calling solver...')
-    start_solv = timer()
 
     time_for_sat = int(time_limit - (timer() - time_start))
     if time_for_sat < time_buffer:
         clean(name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final,
                        '-> OUT OF TIME')
 
-    ## NOW, WE SOLVE THE SAT PROBLEM VIA MINISAT SOLVER (http://minisat.se/)
-    # command = '/path/to/SATsolver/minisat -mem-lim=%i -cpu-lim=%i %s %s' % (mem_limit, time_for_sat, name_formula_file, name_output_satsolver)
+    ## 2 - NOW, WE SOLVE THE SAT PROBLEM VIA MINISAT SOLVER (http://minisat.se/)
+    print('Will now call SAT solver with {:d}MB and {:d} seconds limits'.format(mem_limit, time_for_sat))
     command = './minisat {} {}'.format(name_formula_file, name_output_satsolver)
-
-    print('SAT solver called with {:d}MB and {:d} seconds limits'.format(mem_limit, time_for_sat))
-    os.system(command)
-    end_solv = timer()
-    solver_time.append(end_solv - start_solv)
-    print('Done solver. Round time: {:f}'.format(end_solv - start_solv))
+    # command = '/path/to/SATsolver/minisat -mem-lim={} -cpu-lim={} {} {}'.format(mem_limit, time_for_sat, name_formula_file, name_output_satsolver)
+    start_solver_time = timer()
+    os.system(command)  # actual call to solver!
+    end_solver_time = timer()
+    solver_time.append(end_solver_time - start_solver_time)
+    print('Done solver. Round time: {:f}'.format(end_solver_time - start_solver_time))
     print('Cumulated solver time: {}'.format(sum(solver_time)))
 
+    ## 3 - PARSE OUTPUT OF SAT SOLVER AND CHECK IF IT WAS SOLVED
+    #TODO: would be nice to have this return a representation of the policy, and then have a print facility
     result = cnf.parseOutput(name_output_satsolver, controllerStates, p, print_policy)
-    if result is None:
+    if result is None:  # clean-up whatever aux files were generated for this iteration
         clean(name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final,
                        '-> OUT OF TIME/MEM')
-    if result:
+    if result:  # plan found, get out of the iteration!
         break
     print('UNSATISFIABLE')
 
