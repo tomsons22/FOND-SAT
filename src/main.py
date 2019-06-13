@@ -54,6 +54,11 @@ args_parser.add_argument(
     default=False,
     help='Search for strong  solutions (instead of default strong cyclic solutions) - (default: %(default)s)')
 args_parser.add_argument(
+    '--start',
+    type=int,
+    default=1,
+    help='Size of the policy to start trying (default: %(default)s)')
+args_parser.add_argument(
     '--inc',
     type=int,
     default=1,
@@ -113,7 +118,7 @@ name_output_satsolver = os.path.join(TMP_DIR, 'outsat-{}.txt'.format(params['nam
 cnf = CNF(name_formula_file, name_formula_file_extra, fair, strong)  # generate CNF formla into aux files
 
 solver_time = []
-for i in range(1000):   # try up to controller of size 1000
+for i in range(params['start'], 1000):   # try up to controller of size 1000
     if timer() - time_start > time_limit - time_buffer:
         clean(name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final,
                        '-> OUT OF TIME')
