@@ -9,16 +9,11 @@ from CNF import CNF
 from parser import Parser
 from myTask import MyTask
 from timeit import default_timer as timer
-import time
 import argparse
 import random
 import draw_controller
 
 
-ID_RND = random.randrange(99999)
-
-TMP_DIR = os.path.join(os.getcwd(), f'tmp_fs_{ID_RND}') # subdir where to store all aux files generated (e.g., SAS files)
-print(TMP_DIR)
 def clean(n1, n2, n3, n4, n5, msg):
     print(msg)
     os.system('rm %s %s %s %s %s' % (n1, n2, n3, n4, n5))
@@ -53,9 +48,6 @@ args_parser.add_argument('--mem_limit',
     type=int,
     default=4096,
     help='Memory limit (int) for solver in MB (default: %(default)s)')
-args_parser.add_argument('--name_temp',
-    default='temp',
-    help='Name for temp files; erased after solver is done (default: %(default)s)')
 args_parser.add_argument('--strong',
     action='store_true',
     default=False,
@@ -80,6 +72,8 @@ args_parser.add_argument('--draw-policy',
     action='store_true',
     default=False,
     help='Draw final policy (controller), if found (default: %(default)s)')
+args_parser.add_argument('--name-tmp',
+    help='Name for temporary folder; generally erased at the end.')
 args_parser.add_argument('--tmp',
     action='store_true',
     default=False,
@@ -90,8 +84,11 @@ params = vars(args_parser.parse_args())  # vars returns a dictionary of the argu
 
 print(params)  # just print the options that will be used
 
-if not os.path.exists(TMP_DIR):
-    os.makedirs(TMP_DIR)
+# TMP_DIR: subdir where to store all aux files generated (e.g., SAS files)
+TMP_DIR = os.path.join(os.getcwd(), f"tmp_{params['name_tmp'] if params['name_tmp'] else random.randrange(99999)}") 
+if os.path.exists(TMP_DIR): # delete if already there
+    shutil.rmtree(TMP_DIR)
+os.makedirs(TMP_DIR)
 
 time_start = timer()
 time_limit = params['time_limit']
@@ -111,7 +108,7 @@ solver = params['solver']
 p = Parser()    # build utility object Parser
 p.set_domain(os.path.abspath(params['path_domain']))
 p.set_problem(os.path.abspath(params['path_instance']))
-name_SAS_file = os.path.join(TMP_DIR, 'output-sas-{}.txt'.format(params['name_temp']))                # aux file
+name_SAS_file = os.path.join(TMP_DIR, 'output-sas.txt') 
 
 # Seb: change to FOND-SAT folder and remember where we where. FOND-SAT must be in its src/ folder to run
 current_dir = os.getcwd()
@@ -124,9 +121,9 @@ my_task = p.translate_to_atomic()
 fair = my_task.is_fair()
 
 # Before we start iterating (on no of controller states), create a CNF object
-name_formula_file = os.path.join(TMP_DIR, 'formula-{}.txt'.format(params['name_temp']))                # aux file
-name_formula_file_extra = os.path.join(TMP_DIR, 'formula-extra-{}.txt'.format(params['name_temp']))    # aux file
-name_output_satsolver = os.path.join(TMP_DIR, 'outsat-{}.txt'.format(params['name_temp']))             # aux file
+name_formula_file = os.path.join(TMP_DIR, 'formula.txt')               # aux file
+name_formula_file_extra = os.path.join(TMP_DIR, 'formula-extra.txt')    # aux file
+name_output_satsolver = os.path.join(TMP_DIR, 'outsat.txt')             # aux file
 cnf = CNF(name_formula_file, name_formula_file_extra, fair, strong)  # generate CNF formla into aux files
 
 solver_time = []
@@ -178,8 +175,9 @@ for i in range(params['start'], 1000):   # try up to controller of size 1000
     if solver == 'glucose':
        	command = './glucose {} {}'.format(name_formula_file, name_output_satsolver)
     elif solver == 'minisat':
-        command = './minisat {} {}'.format(name_formula_file, name_output_satsolver)
-        # command = '/path/to/SATsolver/minisat -mem-lim={} -cpu-lim={} {} {}'.format(mem_limit, time_for_sat, name_formula_file, name_output_satsolver)
+        # command = './minisat {} {}'.format(name_formula_file, name_output_satsolver)
+        command = './minisat -mem-lim={} -cpu-lim={} {} {}'.format(mem_limit, time_for_sat, name_formula_file, name_output_satsolver)
+        print(command)
     else:
         print(f"Unknown SAT solver {solver}")
         exit(1)

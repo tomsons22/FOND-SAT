@@ -17,61 +17,54 @@ FOND solver based on SAT, as per the following paper:
 $ pip install graphviz # to draw controllers
 ```
 
-### SAT solver
+### SAT solvers
 
-For easiness to use, this includes a pre-compiled version of Minisat. This pre-compiled version does not allow the use of time/memory limits. If you want to try another SAT solver (or use time/memory contraints), you should re-define the assignment to variable `command` in file `src/main.py` and provide the adequate `parseOutput()` function to parse the output of the solver used.
+Two SAT solvers are already provided: [MiniSat](https://github.com/master-keying/minisat/) (default) and [Glucose](https://www.labri.fr/perso/lsimon/glucose/).
 
-By default, the assginment to the variable is as follows (in `src/main.py`):
+For easiness to use, binary Linux version of both are packaged in FOND-SAT. The version of MiniSAT form has been obtained (and compiled) from [master-keying /
+minisat](https://github.com/master-keying/minisat/), which is a much more maintained repo than the one in the [original site](http://minisat.se/).
 
-    command = './minisat {} {}'.format(name_formula_file, name_output_satsolver)
+To add a new solver:
 
-You need to adapt it to the corresponding SAT solver, for example to use Minisat with time/memory constraints (commented out in the code):
+1. Add a new choice for option `--solver`.
+2. Modify `main.py` to account for the new solver and define the corresponding `command` for it.
+3. Provide the adequate `parseOutput()` function in `src/CNF.py` to parse the output of the solver used.
 
-    command = '/path/to/SATsolver/minisat -mem-lim={} -cpu-lim={} {} {}'.format(mem_limit, time_for_sat, name_formula_file, name_output_satsolver)
+## Example usage
 
-Then, you need to adapt function `parseOutput(...)` in `src/CNF.py`, to parse the output of your SAT solver  (currently works for versions of Minisat).
-
-**RECOMMENDATION:** install a version of Minisat from *http://minisat.se/*, comment line 117 of *main.py* and uncomment line 118. Using another version of Minisat will allow the use of time/memory constraints (newer version is also faster), and does not require the modification of *parseOutput(...)*. The results shown in the paper were obtained using a newer version of Minisat, not the pre-compiled one.
-
-
-
-## Example usage (basic)
-
-From the `src/*` directory run the following command:
-
+The general execution is as follows:
 
 ```shell
-$ python main.py ../F-domains/islands/domain.pddl ../F-domains/islands/p03.pddl
+$ python src/main.py [OPTIONS] path_domain path_instance
 ```
 
-This would run the solver for the task 03 of the Islands domain. The path to the domain and the task must be included.
+The path to the domain and the task must be included. For example:
+
+```shell
+$ python src/main.py F-domains/islands/domain.pddl F-domains/islands/p03.pddl --solver glucose --tmp
+```
+
+This would run the solver for the task 03 of the Islands domain, using Glucose as SAT solver and leaving behind the temporary files.
 
 ## Other options (arguments when calling)
 
 ```shell
   -h, --help            show this help message and exit
+  --solver {minisat,glucose}
+                        SAT solver to use - (default: minisat)
   --time_limit TIME_LIMIT
-                        Time limit (int) for solver in seconds (default:
-                        3600).
+                        Time limit (int) for solver in seconds (default: 3600).
   --mem_limit MEM_LIMIT
                         Memory limit (int) for solver in MB (default: 4096)
-  --name_temp NAME_TEMP
-                        Name for temp files; erased after solver is done
-                        (default: temp)
-  --strong              Search for strong solutions (instead of default strong
-                        cyclic solutions) - (default: False)
+  --strong              Search for strong solutions (instead of default strong cyclic solutions) - (default: False)
   --start START         Size of the policy to start trying (default: 1)
-  --inc INC             Increments in controller size per step. By default the
-                        planner looks for a solution of size *2*, if it does
-                        not find one it looks for a solution of size *3*, and
-                        so on. If inc is set to *i*, the planner looks for a
-                        solution of size *2*, if it does not find one it looks
-                        for a solution of size *2+i*, and so on (default: 1)
-  --gen-info            Show info about SAT formula generation (default:
-                        False)
+  --inc INC             Increments in controller size per step. By default the planner looks for a solution of size *2*, if it does not find one it looks for
+                        a solution of size *3*, and so on. If inc is set to *i*, the planner looks for a solution of size *2*, if it does not find one it
+                        looks for a solution of size *2+i*, and so on (default: 1)
+  --gen-info            Show info about SAT formula generation (default: False)
   --show-policy         Show final policy, if found (default: False)
-  --draw-policy         Draw final policy (controller), if found (default:
-                        False)
+  --draw-policy         Draw final policy (controller), if found (default: False)
+  --name-tmp NAME_TMP   Name for temporary folder; generally erased at the end.
   --tmp                 Do not clean temporary files created (default: False)
 ```
 
