@@ -1,15 +1,16 @@
-# FOND-SAT
+# FOND-SAT: A SAT-based FOND planning system for compact controllers
 
 FOND solver based on SAT, as per the following paper:
 
 * Tomas Geffner, Hector Geffner: [Compact Policies for Fully Observable Non-Deterministic Planning as SAT](https://arxiv.org/pdf/1806.09455.pdf). ICAPS 2018: 88-96
 
-## Setup
+## Planner setup & pre-requisites
 
 ### Files
 
-- `F-domains/*` contains the FOND domains used
-- `src/*` contains the code for the solver, and a pre-compiled version of Minisat
+* `F-domains/` contains the FOND domains used
+* `src/` contains the code for the solver, and a pre-compiled version of Minisat
+  * `src/translate` contains the the parser from [PRP](https://github.com/QuMuLab/planner-for-relevant-policies).
 
 ### Python Modules
 
@@ -30,7 +31,7 @@ To add a new solver:
 2. Modify `main.py` to account for the new solver and define the corresponding `command` for it.
 3. Provide the adequate `parseOutput()` function in `src/CNF.py` to parse the output of the solver used.
 
-## Example usage
+## Running the planner
 
 The general execution is as follows:
 
@@ -46,7 +47,7 @@ $ python src/main.py F-domains/islands/domain.pddl F-domains/islands/p03.pddl --
 
 This would run the solver for the task 03 of the Islands domain, using Glucose as SAT solver and leaving behind the temporary files.
 
-## Other options (arguments when calling)
+### Other options (arguments when calling)
 
 ```shell
   -h, --help            show this help message and exit
@@ -68,20 +69,15 @@ This would run the solver for the task 03 of the Islands domain, using Glucose a
   --tmp                 Do not clean temporary files created (default: False)
 ```
 
-
 ## Interpreting the policy
 
 The policy displayed has 4 sections:
 
-- **Atom (CS):** For each Controller State (CS) it prints out which atoms are true.
-- **(CS, Action with arguments):** For each CS it prints what actions are applied in it.
-- **(CS, Action name, CS):** For each CS it prints the action applied in that state (without arguments, for action with arguments check second section) and successor CS.
-- **(CS, CS):** *(cs1, cs2)* means that the controller can go from *cs1* to *cs2*. In other words, the action applied in *cs1* may lead to *cs2*. 
-
+* `Atom (CS)`: For each controller state `CS` it prints out which atoms are true.
+* `(CS, Action with arguments)`: For each controller state `CS`, it prints what actions are applied in it.
+* `(CS, Action name, CS)`: For each controller state `CS`, it prints the action applied in that state (without arguments, for action with arguments check second section) and successor `CS`.
+* `(CS1, CS2)`: The controller can evolve from `CS1` to `CS`. In other words, the action applied in `CS1` may lead to controller state `CS2`.
 
 ## Dual FOND planning
 
 The paper talks about what we call *Dual FOND planning*. Dual FOND problems are those in which some actions are *fair* and some are *unfair*. To set some action (or actions) as unfair, add `_unfair_` as the last part of the action name in the *pddl* file. The planner will then set this action as unfair.
-
-## Note
-The solver uses the parser from [PRP](https://bitbucket.org/haz/planner-for-relevant-policies/wiki/Home)
