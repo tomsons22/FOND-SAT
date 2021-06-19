@@ -5,7 +5,6 @@ from draw_controller import draw
 from itertools import islice
 import os
 
-
 class MyCNFError(Exception):
     def __init__(self, value):
         self.value = value
@@ -179,99 +178,90 @@ class CNF:
                     file.write(str(self.mapVariableNumber[j]) + '\t')
             file.write('0\n')
 
-    # def printDisjunctions(self):
-    # 	for i in self.disjunctions:
-    # 		for j in i:
-    # 			print j + ' ',
-    # 		print '\n',
-
-    # def printDisjunctionsNumbers(self, printExpanded):
-    # 	for i in self.disjunctions:
-    # 		if printExpanded:
-    # 			for j in i:
-    # 				print j + '\t',
-    # 			print ''
-    # 		for j in i:
-    # 			if j[0] == '-':
-    # 				print '-' + str(self.mapVariableNumber[j[1:]]), '\t',
-    # 			else:
-    # 				print self.mapVariableNumber[j], '\t',
-    # 		print ' 0'
-
     def printVariables(self):
         for i in self.mapVariableNumber:
             print(i)
 
-    def parseOutput(self, nameFile, controllerStates, parser, print_policy=False):
+    def parseOutput(self, nameFile, solver='minisat'):
         sets = [set([]) for i in range(self.num_types)]
-        fres = open(nameFile, 'r')
-        res = fres.readlines()
-        if 'UNSAT' in res[0]:
-            return False
-        if 'INDET' in res[0]:
-            return None
-        if not print_policy:
-            return True
-        res = res[1]
-        res = res.split(' ')
-        for r in res:
-            if '\n' in res:
-                continue
-            var = int(r)
-            if var > 0:
-                varName = self.mapNumberVariable[var]
-                t = self.mapVariableType[varName]
-                sets[t - 1].add(varName)
-        print(sets)
-        print('============================================================================')
-        print('Controller -- CS = Controller State - START')
-        print('============================================================================')
+        with  open(nameFile, 'r') as f:
+            res = [line.strip('\n') for line in f.readlines()]
+            if res[0] == 'UNSAT':   # first element in list is the result in minisat
+                return False, None
+            elif res[0] == 'INDET':
+                return None, None
+
+            if solver == 'minisat':
+                res = res[1]
+            elif solver == 'glucose':
+                res = res[0]
+            else:
+                print("don't know how to parse output of solve %s" % (solver))
+                return False, None
+
+            res = res.split(' ')
+            for r in res:
+                if '\n' in res:
+                    continue
+                var = int(r)
+                if var > 0:
+                    varName = self.mapNumberVariable[var]
+                    t = self.mapVariableType[varName]
+                    sets[t - 1].add(varName)
+        return True, sets
+
+    def printController(self, sets, controllerStates, parser, solver='minisat'):
+        x = '============================================================================\n'
+        x += 'Controller -- CS = Controller State - START\n'
+        x += '============================================================================\n'
         for i in range(len(sets)):
             if i + 1 in self.print_types:
                 s = sets[i]
                 if i == 0:
                     # pair atom controller
-                    print('===================\n===================')
-                    print('Atom (CS)')
-                    print('___________________')
+                    x += '===================\n===================\n'
+                    x += 'Atom (CS)\n'
+                    x += '___________________\n'
                     for n in controllerStates:
-                        print('----------')
+                        x += '----------\n'
                         for j in s:
                             ind = '(' + n + ')'
                             if ind in j:
-                                print('%s %s' % (str(parser.get_var_string(j.split(ind)[0])), str(ind)))
+                                x += '%s %s\n' % (str(parser.get_var_string(j.split(ind)[0])), str(ind))
                 elif i == 1:
                     # pair cs action
-                    print('===================\n===================')
-                    print('(CS, Action with arguments)')
-                    print('___________________')
+                    x += '===================\n===================\n'
+                    x += '(CS, Action with arguments)\n'
+                    x += '___________________\n'
                     for n in controllerStates:
                         for j in s:
                             if '(' + n + ',' in j:
-                                print(j)
+                                x += f'{j}\n'
                 elif i == 2:
                     # Triplet
-                    print('===================\n===================')
-                    print('(CS, Action name, CS)')
-                    print('___________________')
+                    x += '===================\n===================\n'
+                    x += '(CS, Action name, CS)\n'
+                    x += '___________________\n'
                     for n in controllerStates:
                         for j in s:
                             if '(' + n + ',' in j:
-                                print(j)
+                                x += f'{j}\n'
                 else:
-                    print('===================')
-                    print('(CS, CS)')
-                    print('___________________')
+                    x += '===================\n'
+                    x += '(CS, CS)\n'
+                    x += '___________________\n'
                     for j in s:
-                        print(j)
-        print('===================')
-        print('Solved with %i states' % len(controllerStates))
-        print('============================================================================')
-        print('Controller -- CS = Controller State - END')
-        print('============================================================================')
-        return True
+                        x += f'{j}\n'
+        x += '===================\n'
+        x += 'Solved with %i states\n' % len(controllerStates)
+        x += '============================================================================\n'
+        x += 'Controller -- CS = Controller State - END\n'
+        x += '============================================================================\n'
+        return x
 
-    def parseOutputPrintController(self, nameFile, controllerStates, parser,filename,controller_name):
+  
+    def parseOutputPrintController(self, sets, filename, controller_name, solver):
+        out = printController(sets, )
         sets = [set([]) for i in range(self.num_types)]
         fres = open(nameFile, 'r')
         res = fres.readlines()
