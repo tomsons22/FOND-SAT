@@ -11,9 +11,14 @@ from myTask import MyTask
 from timeit import default_timer as timer
 import time
 import argparse
+import random
+import draw_controller
 
-TMP_DIR = os.path.join(cd_fond_sat, 'tmp') # subdir where to store all aux files generated (e.g., SAS files)
 
+ID_RND = random.randrange(99999)
+
+TMP_DIR = os.path.join(os.getcwd(), f'tmp_fs_{ID_RND}') # subdir where to store all aux files generated (e.g., SAS files)
+print(TMP_DIR)
 def clean(n1, n2, n3, n4, n5, msg):
     print(msg)
     os.system('rm %s %s %s %s %s' % (n1, n2, n3, n4, n5))
@@ -25,6 +30,8 @@ def generateControllerStates(i):
         controllerStates.append('n' + str(j + 1))
     controllerStates.append('ng')
     return controllerStates
+
+
 
 
 # PARSE ARGUMENTS
@@ -80,10 +87,16 @@ args_parser.add_argument(
     default=False,
     help='Draw final policy (controller), if found (default: %(default)s)')
 args_parser.add_argument(
-    '--no-clean',
+    '--tmp',
     action='store_true',
     default=False,
     help='Do not clean temporary files created (default: %(default)s)')
+args_parser.add_argument(
+    '--glucose',
+    action='store_true',
+    default=False,
+    help='Use glucose SAT solver instead of MiniZinc - (default: %(default)s)')
+
 
 params = vars(args_parser.parse_args())  # vars returns a dictionary of the arguments
 
@@ -101,7 +114,7 @@ print_policy = params['show_policy']
 draw_policy = params['draw_policy']
 strong = params['strong']
 show_gen_info = params['gen_info']
-no_clean = params['no_clean']
+no_clean = params['tmp']
 
 
 # Parse the PDDL domain and problem and generate SAS files (http://www.fast-downward.org/TranslatorOutputFormat)
@@ -170,8 +183,19 @@ for i in range(params['start'], 1000):   # try up to controller of size 1000
 
     ## 2 - NOW, WE SOLVE THE SAT PROBLEM VIA MINISAT SOLVER (http://minisat.se/)
     print('Will now call SAT solver with {:d}MB and {:d} seconds limits'.format(mem_limit, time_for_sat))
-    command = './minisat {} {}'.format(name_formula_file, name_output_satsolver)
-    # command = '/path/to/SATsolver/minisat -mem-lim={} -cpu-lim={} {} {}'.format(mem_limit, time_for_sat, name_formula_file, name_output_satsolver)
+
+    if params['glucose']:
+        solver = 'glucose'
+    else:
+        solver = 'minisat'
+        
+    if params['glucose']:
+       	command = './glucose {} {}'.format(name_formula_file, name_output_satsolver)
+    else:
+        command = './minisat {} {}'.format(name_formula_file, name_output_satsolver)
+        # command = '/path/to/SATsolver/minisat -mem-lim={} -cpu-lim={} {} {}'.format(mem_limit, time_for_sat, name_formula_file, name_output_satsolver)
+
+
     start_solver_time = timer()
     os.system(command)  # actual call to solver!
     end_solver_time = timer()
@@ -181,17 +205,20 @@ for i in range(params['start'], 1000):   # try up to controller of size 1000
 
     ## 3 - PARSE OUTPUT OF SAT SOLVER AND CHECK IF IT WAS SOLVED
     #TODO: would be nice to have this return a representation of the policy, and then have a print facility
-    result = None
-    if not draw_policy:
-        result = cnf.parseOutput(name_output_satsolver, controllerStates, p, print_policy)
-    else:
-        file_name = os.path.join(current_dir, "policy.sol")
-        out_file_name = os.path.join(current_dir, "policy_graph")
-        result = cnf.parseOutputPrintController(name_output_satsolver, controllerStates, p,file_name,out_file_name)
+    result, res_sets = cnf.parseOutput(name_output_satsolver, solver)
 
-    if result is None:  # clean-up whatever aux files were generated for this iteration
+    if result:
+        out_txt = cnf.printController(res_sets, controllerStates, p, solver)
+        if not draw_policy and print_policy:
+                print(out_txt)
+        elif result and draw_policy:
+            file_name = os.path.join(TMP_DIR, f"result_{ID_RND}.txt")
+            with open(file_name, 'w+') as f:
+                f.write(out_txt)
+            draw_controller.draw(file_name, os.path.join(current_dir, "controller.dot"))
+    elif result is None:  # clean-up whatever aux files were generated for this iteration
         clean(name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final,
-                       '-> OUT OF TIME/MEM')
+                    '-> OUT OF TIME/MEM')
     if result:  # plan found, get out of the iteration!
         break
     print('UNSATISFIABLE')
