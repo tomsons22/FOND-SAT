@@ -36,66 +36,54 @@ def generateControllerStates(i):
 
 # PARSE ARGUMENTS
 args_parser = argparse.ArgumentParser(description='Process arguments to SAT FOND planner')
-args_parser.add_argument(
-    'path_domain',
+args_parser.add_argument('path_domain',
     help='Path to domain file (pddl)')
-args_parser.add_argument(
-    'path_instance',
+args_parser.add_argument('path_instance',
     help='Path to problem instance file (pddl)')
-args_parser.add_argument(
-    '--time_limit',
+
+args_parser.add_argument('--solver',
+    choices = ['minisat', 'glucose'],
+    default='minisat',
+    help='SAT solver to use - (default: %(default)s)')
+args_parser.add_argument('--time_limit',
     type=int,
     default=3600,
     help='Time limit (int) for solver in seconds (default: %(default)s).')
-args_parser.add_argument(
-    '--mem_limit',
+args_parser.add_argument('--mem_limit',
     type=int,
     default=4096,
     help='Memory limit (int) for solver in MB (default: %(default)s)')
-args_parser.add_argument(
-    '--name_temp',
+args_parser.add_argument('--name_temp',
     default='temp',
     help='Name for temp files; erased after solver is done (default: %(default)s)')
-args_parser.add_argument(
-    '--strong',
+args_parser.add_argument('--strong',
     action='store_true',
     default=False,
     help='Search for strong  solutions (instead of default strong cyclic solutions) - (default: %(default)s)')
-args_parser.add_argument(
-    '--start',
+args_parser.add_argument('--start',
     type=int,
     default=1,
     help='Size of the policy to start trying (default: %(default)s)')
-args_parser.add_argument(
-    '--inc',
+args_parser.add_argument('--inc',
     type=int,
     default=1,
     help='Increments in controller size per step. By default the planner looks for a solution of size *2*, if it does not find one it looks for a solution of size *3*, and so on. If inc is set to *i*, the planner looks for a solution of size *2*, if it does not find one it looks for a solution of size *2+i*, and so on (default: %(default)s)')
-args_parser.add_argument(
-    '--gen-info',
+args_parser.add_argument('--gen-info',
     action='store_true',
     default=False,
     help='Show info about SAT formula generation (default: %(default)s)')
-args_parser.add_argument(
-    '--show-policy',
+args_parser.add_argument('--show-policy',
     action='store_true',
     default=False,
     help='Show final policy, if found (default: %(default)s)')
-args_parser.add_argument(
-    '--draw-policy',
+args_parser.add_argument('--draw-policy',
     action='store_true',
     default=False,
     help='Draw final policy (controller), if found (default: %(default)s)')
-args_parser.add_argument(
-    '--tmp',
+args_parser.add_argument('--tmp',
     action='store_true',
     default=False,
     help='Do not clean temporary files created (default: %(default)s)')
-args_parser.add_argument(
-    '--glucose',
-    action='store_true',
-    default=False,
-    help='Use glucose SAT solver instead of MiniZinc - (default: %(default)s)')
 
 
 params = vars(args_parser.parse_args())  # vars returns a dictionary of the arguments
@@ -116,6 +104,7 @@ strong = params['strong']
 show_gen_info = params['gen_info']
 no_clean = params['tmp']
 
+solver = params['solver']
 
 # Parse the PDDL domain and problem and generate SAS files (http://www.fast-downward.org/TranslatorOutputFormat)
 # (all aux files created in temporary directory)
@@ -184,16 +173,16 @@ for i in range(params['start'], 1000):   # try up to controller of size 1000
     ## 2 - NOW, WE SOLVE THE SAT PROBLEM VIA MINISAT SOLVER (http://minisat.se/)
     print('Will now call SAT solver with {:d}MB and {:d} seconds limits'.format(mem_limit, time_for_sat))
 
-    if params['glucose']:
-        solver = 'glucose'
-    else:
-        solver = 'minisat'
-        
-    if params['glucose']:
+
+
+    if solver == 'glucose':
        	command = './glucose {} {}'.format(name_formula_file, name_output_satsolver)
-    else:
+    elif solver == 'minisat':
         command = './minisat {} {}'.format(name_formula_file, name_output_satsolver)
         # command = '/path/to/SATsolver/minisat -mem-lim={} -cpu-lim={} {} {}'.format(mem_limit, time_for_sat, name_formula_file, name_output_satsolver)
+    else:
+        print(f"Unknown SAT solver {solver}")
+        exit(1)
 
 
     start_solver_time = timer()

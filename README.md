@@ -4,10 +4,6 @@ FOND solver based on SAT, as per the following paper:
 
 * Tomas Geffner, Hector Geffner: [Compact Policies for Fully Observable Non-Deterministic Planning as SAT](https://arxiv.org/pdf/1806.09455.pdf). ICAPS 2018: 88-96
 
-## Authors
-
-Tomas Geffner and Hector Geffner
-
 ## Setup
 
 ### Files
@@ -15,14 +11,29 @@ Tomas Geffner and Hector Geffner
 - `F-domains/*` contains the FOND domains used
 - `src/*` contains the code for the solver, and a pre-compiled version of Minisat
 
-### Required
+### Python Modules
 
 ```bash
-pip3 install graphviz
+$ pip install graphviz # to draw controllers
 ```
 
+### SAT solver
+
+For easiness to use, this includes a pre-compiled version of Minisat. This pre-compiled version does not allow the use of time/memory limits. If you want to try another SAT solver (or use time/memory contraints), you should re-define the assignment to variable `command` in file `src/main.py` and provide the adequate `parseOutput()` function to parse the output of the solver used.
+
+By default, the assginment to the variable is as follows (in `src/main.py`):
+
+    command = './minisat {} {}'.format(name_formula_file, name_output_satsolver)
+
+You need to adapt it to the corresponding SAT solver, for example to use Minisat with time/memory constraints (commented out in the code):
+
+    command = '/path/to/SATsolver/minisat -mem-lim={} -cpu-lim={} {} {}'.format(mem_limit, time_for_sat, name_formula_file, name_output_satsolver)
+
+Then, you need to adapt function `parseOutput(...)` in `src/CNF.py`, to parse the output of your SAT solver  (currently works for versions of Minisat).
 
 **RECOMMENDATION:** install a version of Minisat from *http://minisat.se/*, comment line 117 of *main.py* and uncomment line 118. Using another version of Minisat will allow the use of time/memory constraints (newer version is also faster), and does not require the modification of *parseOutput(...)*. The results shown in the paper were obtained using a newer version of Minisat, not the pre-compiled one.
+
+
 
 ## Example usage (basic)
 
@@ -61,7 +72,7 @@ This would run the solver for the task 03 of the Islands domain. The path to the
   --show-policy         Show final policy, if found (default: False)
   --draw-policy         Draw final policy (controller), if found (default:
                         False)
-  --no-clean            Do not clean temporary files created (default: False)
+  --tmp                 Do not clean temporary files created (default: False)
 ```
 
 
@@ -74,21 +85,6 @@ The policy displayed has 4 sections:
 - **(CS, Action name, CS):** For each CS it prints the action applied in that state (without arguments, for action with arguments check second section) and successor CS.
 - **(CS, CS):** *(cs1, cs2)* means that the controller can go from *cs1* to *cs2*. In other words, the action applied in *cs1* may lead to *cs2*. 
 
-## SAT solver
-
-For easiness to use, this includes a pre-compiled version of Minisat. This pre-compiled version does not allow the use of time/memory limits. If you want to try another SAT solver (or use time/memory contraints), you should re-define the assignment to variable `command` in file `src/main.py` and provide the adequate `parseOutput()` function to parse the output of the solver used.
-
-By default, the assginment to the variable is as follows (in `src/main.py`):
-
-    command = './minisat {} {}'.format(name_formula_file, name_output_satsolver)
-
-You need to adapt it to the corresponding SAT solver, for example to use Minisat with time/memory constraints (commented out in the code):
-
-    command = '/path/to/SATsolver/minisat -mem-lim={} -cpu-lim={} {} {}'.format(mem_limit, time_for_sat, name_formula_file, name_output_satsolver)
-
-Then, you need to adapt function `parseOutput(...)` in `src/CNF.py`, to parse the output of your SAT solver  (currently works for versions of Minisat).
-
-**RECOMMENDATION:** see above for installing Minisat.
 
 ## Dual FOND planning
 
