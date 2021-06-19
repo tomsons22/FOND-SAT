@@ -21,14 +21,17 @@ Tomas Geffner and Hector Geffner
 pip3 install graphviz
 ```
 
-**RECOMMENDATION:** install a version of Minisat from *http://minisat.se/*, comment line 117 of *main.py* and uncomment line 118. Using another version of Minisat will allow the use of time/memory constraints (newer version is also faster), and does not require the modification of *parseOutput(...)*. The results shown in the paper were obtained using a newer version of Minisat, not the pre-compiled one.
 
+**RECOMMENDATION:** install a version of Minisat from *http://minisat.se/*, comment line 117 of *main.py* and uncomment line 118. Using another version of Minisat will allow the use of time/memory constraints (newer version is also faster), and does not require the modification of *parseOutput(...)*. The results shown in the paper were obtained using a newer version of Minisat, not the pre-compiled one.
 
 ## Example usage (basic)
 
 From the `src/*` directory run the following command:
 
-    > python main.py ../F-domains/islands/domain.pddl ../F-domains/islands/p03.pddl
+
+```shell
+$ python main.py ../F-domains/islands/domain.pddl ../F-domains/islands/p03.pddl
+```
 
 This would run the solver for the task 03 of the Islands domain. The path to the domain and the task must be included.
 
