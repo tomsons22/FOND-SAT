@@ -148,11 +148,11 @@ for i in range(params['start'], params['end']):  # try these number of controlle
     controllerStates = generateControllerStates(i * params['inc'])
 
     print('#######################################################################################')
-    print('Trying with {} states'.format(len(controllerStates)))
-    print('Looking for strong plans: {}'.format((strong)))
-    print('Fair actions: {}'.format(str(fair)))
-    print('# Atoms: {}'.format(len(my_task.get_atoms())))
-    print('# Actions: {}'.format(len(my_task.get_actions())))
+    print(f'Trying with {len(controllerStates)-2} states')  # 2 dummy states n0 and ng
+    print(f'Looking for strong plans: {strong}')
+    print(f'Fair actions: {str(fair)}')
+    print(f'# Atoms: {len(my_task.get_atoms())}')
+    print(f'# Actions: {len(my_task.get_actions())}')
 
     cnf.reset()
     start_g = timer()
