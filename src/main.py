@@ -138,7 +138,7 @@ init_time = timer() - time_start
 solver_time = []
 grounding_time = []
 result_time = []
-for i in range(params['start'], params['end']):  # try these number of controller sizes
+for i in range(params['start'], params['end']+1):  # try these number of controller sizes
     start_ground = timer()
     if time_limit > 0 and timer() - time_start > time_limit - time_buffer:
         clean(name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final,
