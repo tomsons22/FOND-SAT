@@ -2,7 +2,6 @@ import draw_controller
 import random
 import argparse
 from timeit import default_timer as timer
-from myTask import MyTask
 from parser import Parser
 from CNF import CNF
 import shutil
@@ -59,6 +58,10 @@ args_parser.add_argument('--inc',
                          type=int,
                          default=1,
                          help='Increments in controller size per step. By default the planner looks for a solution of size *2*, if it does not find one it looks for a solution of size *3*, and so on. If inc is set to *i*, the planner looks for a solution of size *2*, if it does not find one it looks for a solution of size *2+i*, and so on (default: %(default)s)')
+args_parser.add_argument('--end',
+                         type=int,
+                         default=1000,
+                        help='Size of the max policy to be considered (default: %(default)s)')
 args_parser.add_argument('--gen-info',
                          action='store_true',
                          default=False,
@@ -135,7 +138,7 @@ init_time = timer() - time_start
 solver_time = []
 grounding_time = []
 result_time = []
-for i in range(params['start'], 1000):  # try up to controller of size 1000
+for i in range(params['start'], params['end']):  # try these number of controller sizes
     start_ground = timer()
     if time_limit > 0 and timer() - time_start > time_limit - time_buffer:
         clean(name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final,
