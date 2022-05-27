@@ -39,7 +39,17 @@ The general execution is as follows:
 $ python src/main.py [OPTIONS] path_domain path_instance
 ```
 
-The path to the domain and the task must be included. For example:
+The path to the domain and the task must be included. For a list of options available use `-h`:
+
+```shell
+$ python src/main.py -h
+usage: main.py [-h] [--solver {minisat,glucose}] [--time-limit TIME_LIMIT] [--mem-limit MEM_LIMIT] [--strong]
+               [--start START] [--inc INC] [--end END] [--gen-info] [--show-policy] [--draw-policy] [--name-tmp NAME_TMP]
+               [--tmp]
+               path_domain path_instance
+```
+
+An easy/quick solvable run would be:
 
 ```shell
 $ python src/main.py F-domains/islands/domain.pddl F-domains/islands/p03.pddl --solver glucose --tmp
@@ -47,27 +57,91 @@ $ python src/main.py F-domains/islands/domain.pddl F-domains/islands/p03.pddl --
 
 This would run the solver for the task 03 of the Islands domain, using Glucose as SAT solver and leaving behind the temporary files.
 
-### Other options (arguments when calling)
+A more challenging ask (taking around 500secs/8min) would be:
 
 ```shell
-  -h, --help            show this help message and exit
-  --solver {minisat,glucose}
-                        SAT solver to use - (default: minisat)
-  --time_limit TIME_LIMIT
-                        Time limit (int) for solver in seconds (default: 3600).
-  --mem_limit MEM_LIMIT
-                        Memory limit (int) for solver in MB (default: 4096)
-  --strong              Search for strong solutions (instead of default strong cyclic solutions) - (default: False)
-  --start START         Size of the policy to start trying (default: 1)
-  --inc INC             Increments in controller size per step. By default the planner looks for a solution of size *2*, if it does not find one it looks for
-                        a solution of size *3*, and so on. If inc is set to *i*, the planner looks for a solution of size *2*, if it does not find one it
-                        looks for a solution of size *2+i*, and so on (default: 1)
-  --gen-info            Show info about SAT formula generation (default: False)
-  --show-policy         Show final policy, if found (default: False)
-  --draw-policy         Draw final policy (controller), if found (default: False)
-  --name-tmp NAME_TMP   Name for temporary folder; generally erased at the end.
-  --tmp                 Do not clean temporary files created (default: False)
+$ python src/main.py F-domains/islands/domain.pddl F-domains/islands/p47.pddl --solver glucose
+
+....
+s SATISFIABLE
+SAT
+Done solver. Round time: 12.916486
+Cumulated solver time: 39.73258573602652
+PLANFOUND!
+Elapsed total time (s): 501.258223
+Elapsed initialisation time (s): 6.977923776998068
+Elapsed grounding time (s): 442.8925411340024
+Elapsed grounding time (s): [22.89034552499652, 30.071642617011094, 44.89836094499333, 47.62225245599984, 57.385479142991244, 62.35428485700686, 73.23855525600084, 104.43162033500266]
+Elapsed solver time (s): 39.732586
+Elapsed solver time (s): [2.222133905001101, 1.909849037998356, 3.3073226740089012, 3.8610715660033748, 3.949099778008531, 4.780444735995843, 6.786178249007207, 12.916485790003208]
+Elapsed result output time (s): 0.00218252201739233
+Elapsed result output time (s): [0.00031191699963528663, 0.0002279759937664494, 0.0005103060102555901, 0.0004846640076721087, 0.0002168909995816648, 0.00019257400708738714, 0.00023819399939384311]
+Looking for strong plans: False
+Fair actions: True
+Done
 ```
+
+It found a policy with 10 states. So, if we directly start with 10 states we should get a single SAT iteration that is shorter:
+
+```shell
+$ python src/main.py F-domains/islands/domain.pddl F-domains/islands/p03.pddl --start 10 --solver glucose
+
+...
+
+s SATISFIABLE
+SAT
+Done solver. Round time: 17.831398
+Cumulated solver time: 17.831397656991612
+PLANFOUND!
+Elapsed total time (s): 157.229258
+Elapsed initialisation time (s): 5.736119034991134
+Elapsed grounding time (s): 115.8947535949992
+Elapsed grounding time (s): [115.8947535949992]
+Elapsed solver time (s): 17.831398
+Elapsed solver time (s): [17.831397656991612]
+Elapsed result output time (s): 0
+Elapsed result output time (s): []
+Looking for strong plans: False
+Fair actions: True
+Done
+```
+
+Let's try the same but with MiniSAT:
+
+```shell
+$ python src/main.py F-domains/islands/domain.pddl F-domains/islands/p03.pddl --start 10 --solver glucose
+
+...
+
+SATISFIABLE
+Done solver. Round time: 91.031980
+Cumulated solver time: 91.03197950900358
+PLANFOUND!
+Elapsed total time (s): 228.864515
+Elapsed initialisation time (s): 5.941680243995506
+Elapsed grounding time (s): 112.23787351899955
+Elapsed grounding time (s): [112.23787351899955]
+Elapsed solver time (s): 91.031980
+Elapsed solver time (s): [91.03197950900358]
+Elapsed result output time (s): 0
+Elapsed result output time (s): []
+Looking for strong plans: False
+Fair actions: True
+Done
+```
+
+Finally, if we tell FOND-SAT to try between 6 and 8 states, the planner will not find any solution;
+
+```shell
+$ python src/main.py F-domains/islands/domain.pddl F-domains/islands/p03.pddl --start 6 --end 8
+
+...
+
+```
+
+
+
+
 
 ## Interpreting the policy
 
