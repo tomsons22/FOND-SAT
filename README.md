@@ -130,6 +130,8 @@ Fair actions: True
 Done
 ```
 
+As one can see, using glucose seems to be much faster than using minisat.
+
 Finally, if we tell FOND-SAT to try between 6 and 8 states, the planner will not find any solution;
 
 ```shell
