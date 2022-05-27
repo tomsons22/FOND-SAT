@@ -1,5 +1,4 @@
 import sys
-from myTask import MyTask
 from timeit import default_timer as timer
 from draw_controller import draw
 from itertools import islice

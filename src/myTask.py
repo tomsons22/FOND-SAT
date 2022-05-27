@@ -118,7 +118,7 @@ class MyTask():
 		counter = 0
 		total = len(self.actions)
 		for a in self.actions:
-			if counter % 1000 == 0:
+			if counter % 1000 == 0:	# report % every 1000 actions
 				print(counter, '/', total)
 			counter += 1
 			if '_DETDUP_' not in a:
@@ -178,7 +178,7 @@ class MyTask():
 		counter = 0
 		total = len(self.actions)
 		for a1 in self.actions:
-			if counter % 1000 == 0:
+			if counter % 1000 == 0:	# report % every 1000 actions
 				print(counter, '/', total)
 			counter += 1
 			compatible_acts = set([])
