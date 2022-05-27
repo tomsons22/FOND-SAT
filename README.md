@@ -138,12 +138,22 @@ Finally, if we tell FOND-SAT to try between 6 and 8 states, the planner will not
 $ python src/main.py F-domains/islands/domain.pddl F-domains/islands/p03.pddl --start 6 --end 8
 
 ...
-
+s UNSATISFIABLE
+Done solver. Round time: 6.254708
+Cumulated solver time: 10.737754994013812
+UNSATISFIABLE
+Elapsed total time (s): 165.802070
+Elapsed initialisation time (s): 6.196163825006806
+Elapsed grounding time (s): 148.8676775389904
+Elapsed grounding time (s): [81.95103869499872, 66.91663884399168]
+Elapsed solver time (s): 10.737755
+Elapsed solver time (s): [4.483046648005256, 6.254708346008556]
+Elapsed result output time (s): 0.0004607840091921389
+Elapsed result output time (s): [0.000187127006938681, 0.0002736570022534579]
+Looking for strong plans: False
+Fair actions: True
+Done
 ```
-
-
-
-
 
 ## Interpreting the policy
 
