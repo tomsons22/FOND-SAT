@@ -656,7 +656,6 @@ def parse_args():
 
 
 def main():
-    print('HOLAAAAAAAAAAAAAAAAAAAAAAA')
     args = parse_args()
 
     timer = timers.Timer()
