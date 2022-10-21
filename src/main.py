@@ -1,3 +1,4 @@
+import subprocess
 import draw_controller
 import random
 import argparse
@@ -191,19 +192,25 @@ for i in range(params['start'], params['end']+1):
         mem_limit, time_for_sat))
 
     if solver == 'glucose':
-       	command = f'{GLUCOSE_BIN} {name_formula_file} {name_output_satsolver}'
+       	command = [GLUCOSE_BIN, name_formula_file, name_output_satsolver]
     elif solver == 'minisat':
-        opt_time = f"-cpu-lim={time_for_sat}" if time_limit > 0 else ""
-        opt_mem = f"-mem-lim={mem_limit}" if mem_limit > 0 else ""
-        command = f'{MINISAT_BIN} {opt_mem} {opt_time} {name_formula_file} {name_output_satsolver}'
-        print(command)
+        command = [MINISAT_BIN]
+        if mem_limit > 0:
+            command = command + [f"-mem-lim={mem_limit}"]
+        if time_limit > 0:
+            command = command + [f"-cpu-lim={time_for_sat}"]
+        command = command + [name_formula_file, name_output_satsolver]
     else:
         print(f"Unknown SAT solver {solver}")
         exit(1)
     end_ground = timer()
+
+    # ACTUAL CALL TO SAT SOLVER!
+    print(command)
     start_solver_time = timer()
-    os.system(command)  # actual call to solver!
+    subprocess.run(command)
     end_solver_time = timer()
+
     start_result = timer()
     grounding_time.append(end_ground - start_ground)
     solver_time.append(end_solver_time - start_solver_time)
