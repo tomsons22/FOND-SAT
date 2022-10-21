@@ -9,13 +9,18 @@ import sys
 import os
 
 # Append the folder of this script to Python path so that planner can be run from anywhere
-cd_fond_sat = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(cd_fond_sat)
+DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(DIR)
+
+MINISAT_BIN=os.path.join(DIR, 'solvers',  'minisat')
+GLUCOSE_BIN=os.path.join(DIR, 'solvers',  'glucose')
 
 
-def clean(n1, n2, n3, n4, n5, msg):
+def clean(files, msg):
     print(msg)
-    os.system('rm %s %s %s %s %s' % (n1, n2, n3, n4, n5))
+    for f in files:
+        os.remove(f)
+    # os.system('rm %s %s %s %s %s' % (n1, n2, n3, n4, n5))
 
 
 def generateControllerStates(i):
@@ -84,7 +89,6 @@ args_parser.add_argument('--tmp',
 
 # vars returns a dictionary of the arguments
 params = vars(args_parser.parse_args())
-
 print(params)  # just print the options that will be used
 
 # TMP_DIR: subdir where to store all aux files generated (e.g., SAS files)
@@ -115,8 +119,8 @@ p.set_problem(os.path.abspath(params['path_instance']))
 name_SAS_file = os.path.join(TMP_DIR, 'output-sas.txt')
 
 # Seb: change to FOND-SAT folder and remember where we where. FOND-SAT must be in its src/ folder to run
-current_dir = os.getcwd()
-os.chdir(cd_fond_sat)
+# current_dir = os.getcwd()
+# os.chdir(cd_fond_sat)
 
 p.generate_file(name_SAS_file)
 p.generate_task(name_SAS_file)
@@ -142,7 +146,7 @@ result_time = []
 for i in range(params['start'], params['end']+1):
     start_ground = timer()
     if time_limit > 0 and timer() - time_start > time_limit - time_buffer:
-        clean(name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final,
+        clean([name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final],
               '-> OUT OF TIME')
 
     # GENERATE set of CONTROLLER STATES (depending on iteration and scaling rate)
@@ -169,7 +173,7 @@ for i in range(params['start'], params['end']+1):
     print('# Variables = {}'.format(cnf.getNumberVariables()))
 
     if time_limit > 0 and timer() - time_start > time_limit - time_buffer:
-        clean(name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final,
+        clean([name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final],
               '-> OUT OF TIME')
 
     print('Creating formula...')
@@ -179,7 +183,7 @@ for i in range(params['start'], params['end']+1):
 
     time_for_sat = int(time_limit - (timer() - time_start))
     if time_limit > 0 and time_for_sat < time_buffer:
-        clean(name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final,
+        clean([name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final],
               '-> OUT OF TIME')
 
     ## 2 - NOW, WE SOLVE THE SAT PROBLEM VIA MINISAT SOLVER (http://minisat.se/)
@@ -187,13 +191,11 @@ for i in range(params['start'], params['end']+1):
         mem_limit, time_for_sat))
 
     if solver == 'glucose':
-       	command = './glucose {} {}'.format(name_formula_file,
-       	                                   name_output_satsolver)
+       	command = f'{GLUCOSE_BIN} {name_formula_file} {name_output_satsolver}'
     elif solver == 'minisat':
-        # command = './minisat {} {}'.format(name_formula_file, name_output_satsolver)
         opt_time = f"-cpu-lim={time_for_sat}" if time_limit > 0 else ""
         opt_mem = f"-mem-lim={mem_limit}" if mem_limit > 0 else ""
-        command = f'./minisat {opt_mem} {opt_time} {name_formula_file} {name_output_satsolver}'
+        command = f'{MINISAT_BIN} {opt_mem} {opt_time} {name_formula_file} {name_output_satsolver}'
         print(command)
     else:
         print(f"Unknown SAT solver {solver}")
@@ -224,7 +226,7 @@ for i in range(params['start'], params['end']+1):
             draw_controller.draw(file_name, os.path.join(
                 current_dir, "controller.dot"))
     elif result is None:  # clean-up whatever aux files were generated for this iteration
-        clean(name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final,
+        clean({name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final},
               '-> No Result')
     if result:  # plan found, get out of the iteration!
         print("PLANFOUND!")
@@ -246,8 +248,8 @@ print('Fair actions: {}'.format(str(fair)))
 
 # clean up all auxiliarly files created
 if not no_clean:
-    clean(name_formula_file, name_output_satsolver, name_SAS_file,
-          name_formula_file_extra, name_final, 'Done')
+    clean([name_formula_file, name_output_satsolver, name_SAS_file,
+          name_formula_file_extra, name_final], 'Done')
     if os.path.exists(TMP_DIR):
         shutil.rmtree(TMP_DIR)
 
