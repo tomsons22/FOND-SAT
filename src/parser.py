@@ -3,6 +3,8 @@ from objs import Variable, Operator
 from myTask import MyTask
 from timeit import default_timer as timer
 
+FILE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 def generate_atom(name, val):
     return '(' + name + '=' + str(val) + ')'
@@ -25,7 +27,8 @@ class Parser:
         self.initial = {}
         self.goal = {}
         self.operators = set([])
-        self.mutex_groups = []  # list containing mutex groups; each is a list of tuples, each tuple has 2 elements, (var, val)
+        # list containing mutex groups; each is a list of tuples, each tuple has 2 elements, (var, val)
+        self.mutex_groups = []
 
     def print_task(self):
         self.print_variables()
@@ -52,7 +55,8 @@ class Parser:
                 if val1 == -1:
                     print('---------', self.variables[var].get_str(val2))
                 else:
-                    print(self.variables[var].get_str(val1), self.variables[var].get_str(val2))
+                    print(self.variables[var].get_str(val1),
+                          self.variables[var].get_str(val2))
             print('-----------------------')
 
     def print_variables(self):
@@ -81,8 +85,11 @@ class Parser:
         time_limit = 1000
 
         ## We generate the SAS FastDownward output file: http://www.fast-downward.org/TranslatorOutputFormat
+        print("Translating PDDL to SAS.....")
         command = 'python translate/translate.py {} {} {} {} | grep "noprint"'.format(time_limit, self.domain,
                                                                                       self.problem, sas_file_name)
+        command = f'python translate/translate.py {time_limit} {self.domain} {self.problem} {sas_file_name} | grep "noprint"'
+        print(command)
         os.system(command)
 
     def generate_task(self, sas_file_name):
@@ -162,7 +169,8 @@ class Parser:
         line_num_effects = 2 + num_prev_cond
         num_effects = int(lines[line_num_effects])
         if num_effects != 0:
-            self.__process_effects(lines[line_num_effects + 1:line_num_effects + num_effects + 1], o)
+            self.__process_effects(
+                lines[line_num_effects + 1:line_num_effects + num_effects + 1], o)
         self.operators.add(o)
         # o.print_me()
 
@@ -174,7 +182,8 @@ class Parser:
         for line in lines:
             l_split = line.split(' ')
             if len(l_split) != 4:
-                raise MyError('Incorrect number of components in effects of an operator!')
+                raise MyError(
+                    'Incorrect number of components in effects of an operator!')
             if l_split[0] != '0':
                 raise MyError('First component of effects != 0!')
             var = int(l_split[1])
@@ -283,7 +292,8 @@ class Parser:
                                 continue
                             atom_del = generate_atom(name, v)
                             del_list.add(atom_del)
-            actions[act_name] = [list(preconditions), list(add_list), list(del_list)]
+            actions[act_name] = [
+                list(preconditions), list(add_list), list(del_list)]
         return actions
 
     def get_mutex_groups_atomic(self):

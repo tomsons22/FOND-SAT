@@ -61,7 +61,7 @@ args_parser.add_argument('--inc',
 args_parser.add_argument('--end',
                          type=int,
                          default=1000,
-                        help='Size of the max policy to be considered (default: %(default)s)')
+                         help='Size of the max policy to be considered (default: %(default)s)')
 args_parser.add_argument('--gen-info',
                          action='store_true',
                          default=False,
@@ -138,7 +138,8 @@ init_time = timer() - time_start
 solver_time = []
 grounding_time = []
 result_time = []
-for i in range(params['start'], params['end']+1):  # try these number of controller sizes
+# try these number of controller sizes
+for i in range(params['start'], params['end']+1):
     start_ground = timer()
     if time_limit > 0 and timer() - time_start > time_limit - time_buffer:
         clean(name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final,
@@ -148,7 +149,8 @@ for i in range(params['start'], params['end']+1):  # try these number of control
     controllerStates = generateControllerStates(i * params['inc'])
 
     print('#######################################################################################')
-    print(f'Trying with {len(controllerStates)-2} states')  # 2 dummy states n0 and ng
+    # 2 dummy states n0 and ng
+    print(f'Trying with {len(controllerStates)-2} states')
     print(f'Looking for strong plans: {strong}')
     print(f'Fair actions: {str(fair)}')
     print(f'# Atoms: {len(my_task.get_atoms())}')
@@ -185,7 +187,8 @@ for i in range(params['start'], params['end']+1):  # try these number of control
         mem_limit, time_for_sat))
 
     if solver == 'glucose':
-       	command = './glucose {} {}'.format(name_formula_file, name_output_satsolver)
+       	command = './glucose {} {}'.format(name_formula_file,
+       	                                   name_output_satsolver)
     elif solver == 'minisat':
         # command = './minisat {} {}'.format(name_formula_file, name_output_satsolver)
         opt_time = f"-cpu-lim={time_for_sat}" if time_limit > 0 else ""
