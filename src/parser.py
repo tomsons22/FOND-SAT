@@ -87,8 +87,11 @@ class Parser:
 
         ## We generate the SAS FastDownward output file: http://www.fast-downward.org/TranslatorOutputFormat
         print("Translating PDDL to SAS.....")
+        # command = f'python {TRANSLATE_BIN} {time_limit} {self.domain} {self.problem} {sas_file_name} | grep "noprint"'
+        # subprocess.run(command, shell=True)
+
         command = ['python', TRANSLATE_BIN, str(time_limit), self.domain, self.problem, sas_file_name]
-        subprocess.run(command)
+        subprocess.run(command, stdout=subprocess.DEVNULL)
 
     def generate_task(self, sas_file_name):
         try:
