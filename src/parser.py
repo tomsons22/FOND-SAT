@@ -1,10 +1,11 @@
 import os
+import subprocess
 from objs import Variable, Operator
 from myTask import MyTask
 from timeit import default_timer as timer
 
 FILE_DIR = os.path.dirname(os.path.abspath(__file__))
-
+TRANSLATE_BIN=os.path.join(FILE_DIR, "translate/translate.py")
 
 def generate_atom(name, val):
     return '(' + name + '=' + str(val) + ')'
@@ -86,11 +87,8 @@ class Parser:
 
         ## We generate the SAS FastDownward output file: http://www.fast-downward.org/TranslatorOutputFormat
         print("Translating PDDL to SAS.....")
-        command = 'python translate/translate.py {} {} {} {} | grep "noprint"'.format(time_limit, self.domain,
-                                                                                      self.problem, sas_file_name)
-        command = f'python translate/translate.py {time_limit} {self.domain} {self.problem} {sas_file_name} | grep "noprint"'
-        print(command)
-        os.system(command)
+        command = ['python', TRANSLATE_BIN, str(time_limit), self.domain, self.problem, sas_file_name]
+        subprocess.run(command)
 
     def generate_task(self, sas_file_name):
         try:
