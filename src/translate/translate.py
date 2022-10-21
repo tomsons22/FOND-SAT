@@ -655,17 +655,18 @@ def parse_args():
     return argparser.parse_args()
 
 
-def main():
-    args = parse_args()
-
+# def main(args):
+def main(task, domain, inv_limit):
+    # args will be like this:
+    #   inv_limit='1000', domain='/home/ssardina/git/planning/FOND/FOND-SAT/FOND-SAT.git/F-domains/acrobatics/domain.pddl', task='/home/ssardina/git/planning/FOND/FOND-SAT/FOND-SAT.git/F-domains/acrobatics/p01.pddl', sas_name='/home/ssardina/git/planning/FOND/FOND-SAT/FOND-SAT.git/tmp_35273/output-sas.txt', generate_relaxed_task=False
     timer = timers.Timer()
     with timers.timing("Parsing", True):
-        task = pddl.open(task_filename=args.task, domain_filename=args.domain)
+        task = pddl.open(task_filename=task, domain_filename=domain)
 
     with timers.timing("Normalizing task"):
         normalize.normalize(task)
 
-    task.INVARIANT_TIME_LIMIT = int(args.inv_limit)
+    task.INVARIANT_TIME_LIMIT = int(inv_limit)
 
     if args.generate_relaxed_task:
         # Remove delete effects.
@@ -688,4 +689,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    args = parse_args()
+
+    main(args.task, args.domain, args.inv_limit)
