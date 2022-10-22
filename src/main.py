@@ -81,6 +81,7 @@ args_parser.add_argument('--draw-policy',
                          default=False,
                          help='Draw final policy (controller), if found (default: %(default)s)')
 args_parser.add_argument('--name-tmp',
+                         type=str,
                          help='Name for temporary folder; generally erased at the end.')
 args_parser.add_argument('--tmp',
                          action='store_true',
@@ -93,8 +94,8 @@ params = vars(args_parser.parse_args())
 print(params)  # just print the options that will be used
 
 # TMP_DIR: subdir where to store all aux files generated (e.g., SAS files)
-TMP_DIR = os.path.join(os.getcwd(
-), f"tmp_{params['name_tmp'] if params['name_tmp'] else random.randrange(99999)}")
+tmp_id = f"tmp_{params['name_tmp'] if params['name_tmp'] else random.randrange(99999)}"
+TMP_DIR = os.path.join(os.getcwd(), tmp_id)
 if os.path.exists(TMP_DIR):  # delete if already there
     shutil.rmtree(TMP_DIR)
 os.makedirs(TMP_DIR)
@@ -119,9 +120,6 @@ p.set_domain(os.path.abspath(params['path_domain']))
 p.set_problem(os.path.abspath(params['path_instance']))
 name_SAS_file = os.path.join(TMP_DIR, 'output-sas.txt')
 
-# Seb: change to FOND-SAT folder and remember where we where. FOND-SAT must be in its src/ folder to run
-# current_dir = os.getcwd()
-# os.chdir(cd_fond_sat)
 
 p.generate_file(name_SAS_file)
 p.generate_task(name_SAS_file)
@@ -227,11 +225,11 @@ for i in range(params['start'], params['end']+1):
         if not draw_policy and print_policy:
             print(out_txt)
         elif result and draw_policy:
-            file_name = os.path.join(TMP_DIR, f"result_{ID_RND}.txt")
+            id_rnd = "".join(random.choice("0123456789abcdef") for _ in range(10))
+            file_name = os.path.join(TMP_DIR, f"result_{id_rnd}.txt")
             with open(file_name, 'w+') as f:
                 f.write(out_txt)
-            draw_controller.draw(file_name, os.path.join(
-                current_dir, "controller.dot"))
+            draw_controller.draw(file_name, "controller.dot")
     elif result is None:  # clean-up whatever aux files were generated for this iteration
         clean({name_formula_file, name_output_satsolver, name_SAS_file, name_formula_file_extra, name_final},
               '-> No Result')
@@ -253,14 +251,11 @@ print(f'Elapsed result output time (s): {result_time}')
 print('Looking for strong plans: {}'.format(str(strong)))
 print('Fair actions: {}'.format(str(fair)))
 
-# clean up all auxiliarly files created
+# clean up all auxiliary files created
 if not no_clean:
     clean([name_formula_file, name_output_satsolver, name_SAS_file,
           name_formula_file_extra, name_final], 'Done')
     if os.path.exists(TMP_DIR):
         shutil.rmtree(TMP_DIR)
-
-# Seb: return to there it was called
-os.chdir(current_dir)
 
 exit(0)
